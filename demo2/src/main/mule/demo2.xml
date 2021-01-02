@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="189805dc-0d81-4bc7-af86-97a003ea85dc" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="HellwWorldFLow" doc:id="b76df172-2190-412d-99e3-6313dad12f88" >
+		<http:listener doc:name="/Get HW" doc:id="e7336051-9147-4246-a4fd-cc388d8d5339" config-ref="HTTP_Listener_config" path="/helloworld"/>
+		<logger level="INFO" doc:name="Logger" doc:id="99785a28-0e98-4c74-8a83-5fb87e4e705c" message="*Hellow world invoked*"/>
+		<set-variable value="10" doc:name="Set Variable" doc:id="110d1f71-40d2-4016-b604-891a3eae953b" variableName="Var1"/>
+		<logger level="INFO" doc:name="Logger" doc:id="8d3d8d0f-16e2-465d-b713-b129460f7233" message="*2nd logger*"/>
+	</flow>
+</mule>

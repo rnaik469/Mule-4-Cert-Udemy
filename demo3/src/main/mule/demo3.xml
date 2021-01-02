@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="ccfa5d6f-6935-4a01-ae42-e749a63c046d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="GetFlow" doc:id="d9bcc6fc-ee4e-4c3d-99f5-fc0dc76fdf59" >
+		<http:listener doc:name="/Get hello" doc:id="fdc69395-e782-428c-8ffc-6212e6a92964" config-ref="HTTP_Listener_config" path="/hello" allowedMethods="GET"/>
+		<logger level="INFO" doc:name="Logger" doc:id="939cad76-8717-4115-987a-e43309085205" message="*Get Flow invoked*"/>
+		<set-payload value="{Hello World}" doc:name="Set Payload" doc:id="cbf0c425-681b-4f72-bc23-7b5b69541ec1" />
+	</flow>
+	<flow name="PostFlow" doc:id="4b61c7a3-8a45-49a9-adc6-7e2e51e8026a" >
+		<http:listener doc:name="Copy_of_/Get hello" doc:id="76261aa8-a1d0-4d1e-96ba-2ec0d4e333aa" config-ref="HTTP_Listener_config" path="/hello1" allowedMethods="POST" />
+		<logger level="INFO" doc:name="Copy_of_Logger" doc:id="c6b565b9-0652-4dda-8fc1-09e208801652" message="*Post Flow invoked*" />
+	</flow>
+</mule>

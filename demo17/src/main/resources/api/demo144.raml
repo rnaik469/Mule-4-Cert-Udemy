@@ -1,0 +1,36 @@
+#%RAML 1.0
+version: 1.0
+baseUri: https://anypoint.mulesoft.com/mocking/api/v1/links/1547768f-b1e8-4b74-9f4f-de1e49f62153/ # 
+title: demo144
+description: API demo
+/demo:
+  get:
+    description: Retrive demo
+    queryParameters:
+      id:
+        required: true
+        example: "12345"
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              {
+                "fname" : "rohit",
+                "Lname" : "naik"
+              }
+      500:
+        body:
+          application/json:
+            example: "Internal Error"
+  post:
+    description: post demo
+    body:
+      application/json:
+        example:
+          {
+            "fname" : "baba"
+          }
+
+
+          

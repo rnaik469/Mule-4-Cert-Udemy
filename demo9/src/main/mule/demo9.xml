@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="168ca851-c42f-4167-b0e7-de99eb681619" >
+		<file:connection workingDir="C:\Users\rohinaik\Desktop\Learning\Mule\prac\input" />
+	</file:config>
+	<file:config name="File_Config1" doc:name="File Config" doc:id="b466bbc5-fb81-4bd1-9bb7-dac06baf415f" >
+		<file:connection workingDir="C:\Users\rohinaik\Desktop\Learning\Mule\prac\input" />
+	</file:config>
+	<file:config name="File_Config2" doc:name="File Config" doc:id="5bfcf0c4-117c-4a0d-bd32-f3925091c657" >
+		<file:connection workingDir="C:\Users\rohinaik\Desktop\Learning\Mule\prac\output" />
+	</file:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="18ddece2-a338-40f0-981e-e008b2ca580e" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<file:config name="File_Config3" doc:name="File Config" doc:id="f203adec-e620-4189-b9ad-a98a5a095b78" >
+		<file:connection workingDir="C:\Users\rohinaik\Desktop\Learning\Mule\prac" />
+	</file:config>
+	<file:config name="File_Config4" doc:name="File Config" doc:id="efbb0f39-88fe-4747-ad5c-b0495912b60d" >
+		<file:connection workingDir="C:\Users\rohinaik\Desktop\old\docs" />
+	</file:config>
+	<flow name="fileProcess" doc:id="703bca3b-874b-4ca6-b09c-b98719e5ed48" >
+		<http:listener doc:name="Listener" doc:id="137e8dbf-2a00-4277-9c78-3d63eacddee2" path="/read" config-ref="HTTP_Listener_config"/>
+		<file:list doc:name="List" doc:id="399bed4b-3d3b-4631-8012-093cc6513a45" config-ref="File_Config4" directoryPath="C:\Users\rohinaik\Downloads"/>
+		<logger level="INFO" doc:name="Logger" doc:id="622a5879-15d2-4e01-83bb-76d8ed1c083d" message="#[payload]" />
+	</flow>
+</mule>

@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="name" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="firstname" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="lastname" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="FA" format="json">
+      <types:shape format="weave" example="examples/muleFA.json"><![CDATA[%dw 2.0
+
+type FA = {|
+  accountID: Number {"typeId": "int"}, 
+  country: String, 
+  creationDate: String, 
+  city: String, 
+  street: String, 
+  firstName: String, 
+  lastName: String, 
+  accountType: String, 
+  state: String, 
+  postal: Number {"typeId": "int"}, 
+  miles: Number {"typeId": "int"}
+|} {"example": "{\\\"accountID\\\":4400,\\\"country\\\":\\\"USA\\\",\\\"creationDate\\\":\\\"2017-10-21 22:54:36\\\",\\\"city\\\":\\\"Boulder\\\",\\\"street\\\":\\\"12345 Green\\\",\\\"firstName\\\":\\\"Mat\\\",\\\"lastName\\\":\\\"Siva\\\",\\\"accountType\\\":\\\"business\\\",\\\"state\\\":\\\"Colorado\\\",\\\"postal\\\":82433,\\\"miles\\\":119093}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#5f05f43e-ab65-4c64-93fa-b848148e2b75">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="FA"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

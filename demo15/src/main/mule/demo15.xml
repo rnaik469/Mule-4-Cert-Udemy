@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:x12="http://www.mulesoft.org/schema/mule/x12"
+	xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/x12 http://www.mulesoft.org/schema/mule/x12/current/mule-x12.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="eeba1826-1e60-4ab8-938c-e64f5b8cada6" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="1e44949a-5944-4359-9c5d-1415dbd098cf" >
+		<email:smtp-connection host="smtp.gmail.com" user="gmail.com" password="" port="587">
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<x12:config name="X12_EDI_Config" doc:name="X12 EDI Config" doc:id="3f425382-666f-4a19-8cce-528d9d6e4a0e" >
+	</x12:config>
+	<x12:config name="X12_EDI_Config1" doc:name="X12 EDI Config" doc:id="f5f5ea00-5d6a-49ba-bd78-4cbe2743d046" />
+	<file:config name="File_Config" doc:name="File Config" doc:id="bd662058-3ac6-4805-aab0-620595fff8a9" >
+		<file:connection workingDir="C:\Users\rohinaik\Desktop\Learning" />
+	</file:config>
+	<flow name="errorhandling" doc:id="0382b948-188b-48a8-81f8-56074b6eb386" >
+		<http:listener doc:name="Listener" doc:id="021fb4a8-b07c-4562-a18f-9715ec98e763" config-ref="HTTP_Listener_config" path="/call" allowedMethods="GET"/>
+				 
+		<file:read doc:name="Read" doc:id="ff0f4670-adbd-4fd0-a36c-a1f26a7a136e" config-ref="File_Config" path="C:\Users\rohinaik\Desktop\Learning\GETo85641WAL.004530"/>
+		<x12:read doc:name="Read" doc:id="bc4f68ee-6c76-4c49-a9aa-961b528c9a25" config-ref="X12_EDI_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="27ed7cfa-e8ca-43ca-8fa1-9dc33fd4e947" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="5d223f82-7c2b-49e6-a9f4-7b7d4101bece" message="#[payload]"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="31babe0b-5460-4541-b0dc-574fda856887" >
+				<set-variable value="@gmail.com" doc:name="Set Variable" doc:id="590adae0-d3c4-43f4-a42d-2fa2492fee13" variableName="mail" />
+				<email:send doc:name="Send" doc:id="beac7db6-6ac3-44a5-9f6b-a8e4fd39e89c" config-ref="Email_SMTP" fromAddress="mastbaba@kup.com" subject="Error">
+					<email:to-addresses>
+						<email:to-address value="#[vars.mail]" />
+					</email:to-addresses>
+					<email:body contentType="text/html" encoding="UTF-8">
+			</email:body>
+				</email:send>
+			</on-error-propagate>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="95378ea4-a48a-4d13-9372-71a95733bfea" />
+		</error-handler>
+	</flow>
+</mule>

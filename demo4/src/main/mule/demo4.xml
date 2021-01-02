@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="5489e988-7c60-4a67-a02f-9d78b95aa960" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="86880e11-7054-4097-8952-3e21d1e648f2" >
+		<http:request-connection host="dummy.restapiexample.com" />
+	</http:request-config>
+	<flow name="GETHello1" doc:id="989afcb2-251b-4b46-9218-9d65751db6fc" >
+		<http:listener doc:name="Listener" doc:id="015386c4-3878-48ef-b7c9-8619b188b899" config-ref="HTTP_Listener_config" path="/hello1"/>
+		<http:request method="GET" doc:name="Call REST employee WS" doc:id="ff1aa05b-08ff-4104-9d42-b99f15394b32" config-ref="HTTP_Request_configuration" path="/api/v1/employees"/>
+	</flow>
+</mule>

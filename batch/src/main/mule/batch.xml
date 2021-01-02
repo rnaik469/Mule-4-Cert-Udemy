@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd">
+	<flow name="batchFlow" doc:id="d74f4fda-6dc9-4e75-8fc9-4526a76af785" >
+		<scheduler doc:name="Scheduler" doc:id="8949126d-baf3-40e2-b960-12bcff6c2bab" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="10" timeUnit="SECONDS"/>
+			</scheduling-strategy>
+		</scheduler>
+		<set-variable value="1" doc:name="Set Variable" doc:id="a4b16673-61bd-4ce5-ae9a-68a6fb9d9f05" variableName="Counter"/>
+		<set-payload value="#[attributes.headers]" doc:name="Set Payload" doc:id="cf7d4960-16cf-44ce-8240-0754843fbd6f" />
+		<batch:job jobName="batchBatch_Job" doc:id="c9692a15-48ad-4865-a841-96c946b483ed" >
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="9fceb2d3-4c33-41bc-b17e-6bcdfc3ec507" >
+					<set-variable value="#[vars.Counter +10]" doc:name="Set Variable" doc:id="29c78a86-b4f5-482e-a537-a0de878098cc" variableName="cin"/>
+					<set-variable value='#[attributes.]' doc:name="Set Variable" doc:id="33da20f1-dc88-44f1-bca1-ed7e554a9585" variableName="svar" />
+				</batch:step>
+			</batch:process-records>
+		</batch:job>
+		<logger level="INFO" doc:name="Logger" doc:id="b69b9971-4db8-40a1-9968-b236009900bd" message="#[vars.Counter]" />
+		<logger level="INFO" doc:name="Logger" doc:id="828639b9-e0b2-497a-a1e3-0b2269851f2b" message="#[vars.svar]"/>
+	</flow>
+</mule>

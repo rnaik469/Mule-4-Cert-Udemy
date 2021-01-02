@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ftp="http://www.mulesoft.org/schema/mule/ftp" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ftp http://www.mulesoft.org/schema/mule/ftp/current/mule-ftp.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="57cfd558-7743-4b13-8338-86d5d56f0319" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="828240a8-c8c8-4647-84f2-c2e38b407372" >
+		<db:my-sql-connection host="localhost" port="3333" user="root" password="baba" database="employee-info" />
+	</db:config>
+	<flow name="postemployeedatatodbFlow" doc:id="f5294fb7-a47e-4aa6-beb5-08bb726be805" >
+		<http:listener doc:name="Listener" doc:id="9b6dfd7c-fa67-4168-9615-22a75c7f5421" config-ref="HTTP_Listener_config" path="/insert"/>
+		<db:insert doc:name="Insert" doc:id="edaf5a52-6305-4700-afe6-0a18a9395093" config-ref="Database_Config">
+			<db:sql >INSERT INTO employee  (id, firstName, lastName, age, role) VALUES (:id, :firstName, :lastName,:age, :role) 
+
+</db:sql>
+			<db:input-parameters ><![CDATA[#[{id: payload.id,
+  firstName: payload.firstName,
+  lastName: payload.lastName,
+  age: payload.age,
+  role: payload.role
+ }]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="a82f3c94-92d3-475a-88b7-4e9b54d1753f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message":"has been created"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

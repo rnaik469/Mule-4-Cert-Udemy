@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="scatter_getter-appFlow" doc:id="09450b59-5095-4004-9371-7426b066af2d" >
+		<http:listener doc:name="Listener" doc:id="2959b7a6-e417-4389-8d1e-199e18bff1c7" config-ref="HTTP_Listener_config" path="/scatter/{id}"/>
+		<set-variable value="#[attributes.uriParams.id]" doc:name="Set Variable" doc:id="004001b9-7468-46a6-8914-31fcd8aa51f3" variableName="id"/>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="f2e563c9-de0a-4207-af50-510fb3cf734b" >
+			<route >
+				<flow-ref doc:name="Flow Reference" doc:id="42228254-7254-49dd-8280-bbd6f2fb5129" name="getCustomerById"/>
+			</route>
+			<route >
+				<flow-ref doc:name="Flow Reference" doc:id="91f1aa22-c573-420a-8583-3c2b75310a57" name="getProductById" />
+			</route>
+			<route >
+				<flow-ref doc:name="Flow Reference" doc:id="49f0e069-8b95-470e-8269-7a1ebfba1c58" name="getItemById" />
+			</route>
+			<route >
+				<flow-ref doc:name="Flow Reference" doc:id="edda7ed9-79c1-4647-aedd-d4dae1fccdad" name="getInvoiceById" />
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Transform Message" doc:id="140aad7d-56bf-4c1b-98f0-ae72383293f6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+flatten(payload...payload)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

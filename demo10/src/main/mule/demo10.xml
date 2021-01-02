@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="d3850969-42f2-4282-b8dc-b565b45f6273" >
+		<file:connection workingDir="C:\Users\rohinaik\Desktop\Learning\Mule\prac\input" />
+	</file:config>
+	<file:config name="File_Config1" doc:name="File Config" doc:id="b93ac915-b49a-4663-b0aa-74fceb1fc43b" >
+		<file:connection workingDir="C:\Users\rohinaik\Desktop\Learning\Mule\prac\output" />
+	</file:config>
+	<flow name="FileProcessing" doc:id="7d485e86-0642-493a-a4e7-f60300d71ffd" >
+		<file:listener doc:name="On New or Updated File" doc:id="222fb113-bfc8-486f-a56d-67f028c83afc" config-ref="File_Config" directory="C:\Users\rohinaik\Desktop\Learning\Mule\prac\input" autoDelete="true" moveToDirectory="C:\Users\rohinaik\Desktop\Learning\Mule\prac\output">
+			<scheduling-strategy >
+				<fixed-frequency frequency="5" timeUnit="SECONDS"/>
+			</scheduling-strategy>
+		</file:listener>
+		<ee:transform doc:name="Transform Message" doc:id="b7c8e7e4-928c-4c2e-ab71-bc2e277e43d4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="36e49303-9873-4c4f-9906-1eb29c073ed2" message="before for each"/>
+		<foreach doc:name="For Each" doc:id="200cef86-14d4-457c-8947-0caaa5fd6b61" >
+			<logger level="INFO" doc:name="Logger" doc:id="0e930b26-1cee-46bc-8c0a-7d81368a09a8" message="#[payload]" />
+			<set-variable value="#[payload.policyID]" doc:name="Set Variable" doc:id="518fcf90-2bf2-4a09-9345-22691d37ee0d" variableName="filename" />
+			<set-variable value='#[now().year ++ "."  ++ now().month ++ "."   ++ now().day ++ "."   ++ now().hour ++ "."   ++ now().minutes]' doc:name="Set Variable" doc:id="ff45dd58-e243-4505-bd8f-0a186cb24855" variableName="var2"/>
+			<ee:transform doc:name="Transform Message" doc:id="ee793cce-7927-4b4e-82cd-2eda262b306c" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+payload]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<file:write doc:name="Write" doc:id="077f0ff8-59a2-40e2-9c3b-af585fa3b76d" config-ref="File_Config1" path='#[vars.filename ++ "." ++ vars.var2 ++ ".csv"]'/>
+		</foreach>
+		<logger level="INFO" doc:name="Logger" doc:id="79de9b34-fea2-4b91-a76c-c6b115493cae" message="after for each"/>
+	</flow>
+</mule>

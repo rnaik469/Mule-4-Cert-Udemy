@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="0b353f9f-c38c-4d5f-b3c5-fa9487a1fbea" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="demo11Flow" doc:id="9d298e17-6fbb-465a-8390-249f0d4ca5b3" >
+		<http:listener doc:name="Choice Start" doc:id="2179136e-3f3c-4c69-8697-41660f9c8f0f" config-ref="HTTP_Listener_config" path="/call"/>
+		<set-variable value="#[attributes.queryParams.name]" doc:name="Set Variable" doc:id="c2959e11-6fe7-4516-8111-c6e05d3428a8" variableName="name"/>
+		<choice doc:name="Choice" doc:id="1a7ebf79-e95e-4315-b276-a0a667faeb02" >
+			<when expression='#[vars.name == "m"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="dd1cdc47-bbe6-43ed-9e39-eeb52251d2a1" message="Rohit selected"/>
+			</when>
+			<when expression='#[vars.name == "r"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="91f762ea-b32c-4def-9972-34ba181608af" message="baba"/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="52ddbf92-5070-4d97-8311-f44671ba26fa" message="default"/>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

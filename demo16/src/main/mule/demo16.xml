@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="69044af3-9c6f-4176-bdc4-a540f58fbb00" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="3bcb9427-3966-456c-9c4b-2be8aea40752" >
+		<db:my-sql-connection host="localhost" port="3333" user="rn" password="rn31" database="mule" />
+	</db:config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="ac19ca29-5a8f-4974-9623-cd3832049d8a" >
+		<file:connection workingDir="C:\Users\rohinaik\Desktop\Learning\Mule\prac\output" />
+	</file:config>
+	<file:config name="File_Config1" doc:name="File Config" doc:id="9921b640-a255-461e-8c91-5882b8c81ab6" >
+		<file:connection workingDir="C:\Users\rohinaik\Desktop\Learning\Mule\prac\input" />
+	</file:config>
+	<db:config name="Database_Config1" doc:name="Database Config" doc:id="bd7968c6-a5cc-40ef-ac3c-74c5f2320b0f" >
+		<db:my-sql-connection host="localhost" port="3333" user="rn" password="rn31" database="mule"/>
+	</db:config>
+	<flow name="dbSelect" doc:id="ed50234f-c00b-4b0c-a4d6-e36dedabac46" >
+		<http:listener doc:name="dbSelect" doc:id="af1ee780-4795-4194-8ccc-834bfcf45cb4" config-ref="HTTP_Listener_config" path="/call"/>
+		<db:select doc:name="Select form ins" doc:id="3f2363ca-066b-43f0-b687-4c3ecd725fa2" config-ref="Database_Config">
+			<db:sql >select * from ins;</db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="576e9072-403a-4a0e-ad7b-68de11463349">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="36002f55-69b5-423e-af75-3da57285bca4" >
+			<set-variable doc:name="Set Variable" doc:id="685954c1-55b3-4111-a0ac-71072af06d45" variableName="filename" value='#[payload.policyID ++ ".txt"]'/>
+			<file:write doc:name="Write" doc:id="57ff0c89-d7cf-4e0f-8af2-106b491df353" config-ref="File_Config" path="#[vars.filename]"/>
+		</foreach>
+	</flow>
+</mule>

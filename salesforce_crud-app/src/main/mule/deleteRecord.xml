@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="deleteRecordFlow" doc:id="b9929383-9a2c-4dde-ba5c-e656ffe913b1" >
+		<http:listener doc:name="Listener" doc:id="d75a1c8d-6646-4d2b-869a-a369797287c4" config-ref="HTTP_Listener_config" path="/delrec"/>
+		<set-variable value="#[attributes.queryParams.email]" doc:name="Set Variable" doc:id="918e9422-b0a9-43bb-ac7d-c8135d764013" variableName="Email"/>
+		<logger level="INFO" doc:name="Logger" doc:id="b2f37012-0b34-4e64-a096-341f607295cf" message="#[vars.Email]"/>
+		<salesforce:query doc:name="Query" doc:id="a8fbfbb7-7cbc-4620-8709-47e6f8000513" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query >DELETE FROM contact WHERE Email = &quot;naik@baba.com&quot;</salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="4ef6cfd4-9054-4e89-ab2c-bc0765722929" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message":"A record from contact successfully deleted"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

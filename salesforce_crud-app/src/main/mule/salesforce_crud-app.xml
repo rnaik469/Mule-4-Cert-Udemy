@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="257ac7f2-cfc3-4939-8087-ff2583b50e7b" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="ae81929b-f0f6-4fba-83e0-00cb6d4d4831" >
+		<salesforce:cached-basic-connection username="${sfdc.username}" password="${sfdc.password}" securityToken="${sfdc.securityToken}" />
+	</salesforce:sfdc-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="5291d8d5-ebfe-4067-80a5-35deaba59059" file="mule.dev.properties" />
+	<flow name="salesforce_crud-appFlow" doc:id="97370924-f93a-4f0a-bf90-d2b6f22be56f" >
+		<http:listener doc:name="Listener" doc:id="938eb5b8-8d77-4588-9ace-2ecc39398837" config-ref="HTTP_Listener_config" path="/getsf"/>
+		<salesforce:query doc:name="Query" doc:id="dbb9cc4e-d89c-470c-9637-ad0e2f2fa337" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query >SELECT firstName,lastName,Email FROM contact order by Email</salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="34f33087-adde-4fec-af6f-c63354f188a4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map{
+	"Email":$.Email,
+	 "firstName":$.FirstName,
+	 "lastName":$.LastName
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

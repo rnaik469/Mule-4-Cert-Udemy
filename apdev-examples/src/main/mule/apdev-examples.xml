@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:accounts-api="http://www.mulesoft.org/schema/mule/accounts-api" xmlns:x12="http://www.mulesoft.org/schema/mule/x12"
+	xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/x12 http://www.mulesoft.org/schema/mule/x12/current/mule-x12.xsd
+http://www.mulesoft.org/schema/mule/accounts-api http://www.mulesoft.org/schema/mule/accounts-api/current/mule-accounts-api.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="337af1d5-2390-4cc1-ab92-b8d8545992f3" >
+		<http:request-connection host="localhost" port="8082" connectionIdleTimeout="300000" />
+	</http:request-config>
+	<vm:config name="VM_Config" doc:name="VM Config" doc:id="d2af5231-4ac1-4ee0-9858-09df0bfa7116" >
+		<vm:queues >
+			<vm:queue queueName="goodbye" />
+		</vm:queues>
+	</vm:config>
+	<flow name="helloFlow" doc:id="58bffe12-d968-426e-887a-f07506dd2f58" >
+		<http:listener doc:name="GET /hello" doc:id="41ce0c75-65b2-4ab4-b572-240909c34e85" config-ref="HTTP_Listener_config" path="/hello" allowedMethods="GET">
+			<http:error-response >
+				<http:headers ><![CDATA[#[output application/java
+---
+{
+	Name : "Rohit"
+}]]]></http:headers>
+			</http:error-response>
+		</http:listener>
+		<flow-ref doc:name="Flow Reference" doc:id="3e851452-c68b-47fe-8943-34b00d918148" name="subflow" />
+		<vm:publish queueName="goodbye" doc:name="VM GoodBye" doc:id="2e54767f-1e49-4f23-bb74-7d8dde41389f" config-ref="VM_Config" timeout="300"/>
+		<accounts-api:get-all-accounts_2 doc:name="Get All Accounts" doc:id="53b3eaa0-5abe-4cfd-9c21-d44caa82c703" id="1"/>
+		<logger level="INFO" doc:name="payload" doc:id="8a007a4c-13c4-44e0-836e-f137d88eef4e" message="#[payload]"/>
+	</flow>
+	<flow name="apdev-examplesFlow" doc:id="4fe6dc52-4bb1-43dd-a236-73342cabbc3d" >
+		<x12:read doc:name="Read" doc:id="d2ab6c7e-31f5-407c-b36e-e55fab37b894" />
+		<x12:write doc:name="Write" doc:id="df8c95db-faf4-4942-9627-c0aa446de02e" />
+	</flow>
+	<flow name="goodByeFlow" doc:id="c30be8cb-42e5-4c6b-9437-7af4575b1f9f" >
+		<vm:listener queueName="goodbye" doc:name="VM Goodbye" doc:id="f3e6fb55-c27a-4e7c-b790-dbbe39b7b8d1" config-ref="VM_Config"/>
+		<set-payload value="#[upper('goodbye')]" doc:name="goodbye" doc:id="5fd159f1-780f-4fe5-be72-b0cf5ba385b6" />
+		<logger level="INFO" doc:name="Logger" doc:id="d3b31fb3-35a5-4e03-ab7a-f5e06e9ea0fc" message="#[upper('attributes.queryParams.fName')]"/>
+	</flow>
+	<sub-flow name="subflow" doc:id="8de524fb-bd5f-403e-9ac3-86e19f7d04d9" >
+		<set-variable value="#[attributes.queryParams.fName]" doc:name="Set Variable" doc:id="8a579f31-8e62-410b-8100-23a4e8c32b15" variableName="firstName"/>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="560abdeb-dbd3-49fe-b809-55ce7b57d45a" />
+	</sub-flow>
+</mule>

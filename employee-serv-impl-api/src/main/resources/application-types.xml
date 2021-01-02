@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="empMeta" format="json">
+      <types:shape format="weave" example="examples/mapEmp-1.json"><![CDATA[%dw 2.0
+
+type empMeta = {|
+  id: Number {"typeId": "int"}, 
+  name: String, 
+  role: String
+|} {"example": "{\\\"id\\\":106,\\\"name\\\":\\\"Dejen Wogayehu\\\",\\\"role\\\":\\\"dev\\\"}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#7f23718b-8199-44c6-8e2e-6602d996c470">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="empMeta"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="getAccountsbyAll" doc:id="3558396b-a855-4b32-97eb-59c0fb054548" >
+		<db:select doc:name="Select" doc:id="c6150cf5-48f4-4375-b6f2-8018a05833b0" config-ref="Database_Config">
+			<db:sql >select * from flights_customers where accountType=:type and  name= :name and country = :country ;</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"type": attributes.queryParams."type",
+	name: attributes.queryParams.'name',
+	country: attributes.queryParams.'country'
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="c0f9b6bf-45c4-40d3-950a-edb8ed2f0ceb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+fun split
+(data) = data splitBy (" ")
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	accountID: payload01.accountID default "",
+	address: ((payload01.street default "") ++ (payload01.city default "")) ++ (payload01.state default ""),
+	postal: payload01.postal default "",
+	country: payload01.country default "",
+	creationDate: payload01.creationDate as String default "",
+	city: payload01.city as String default "",
+	street: payload01.street as String default "",
+	accountType: payload01.accountType default "",
+	state: payload01.state as String default "",
+	firstName: split(payload01.name)[0],
+	lastName: split(payload01.name)[1],
+	miles: payload01.miles default 0
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	
+	
+	<flow name="getAccountsbyname" doc:id="bc5fa37a-b23e-4012-a081-e0b7f5f34e8a" >
+		<db:select doc:name="Select" doc:id="91fe5e1e-eb49-49a6-b5c8-b7f37836acca" config-ref="Database_Config">
+			<db:sql >select * from flights_customers where accountType=:type and  name= :name</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"type": attributes.queryParams."type",
+	name: attributes.queryParams.'name'
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="5f05f43e-ab65-4c64-93fa-b848148e2b75" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+fun split
+(data) = data splitBy (" ")
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	accountID: payload01.accountID default "",
+	address: ((payload01.street default "") ++ (payload01.city default "")) ++ (payload01.state default ""),
+	postal: payload01.postal default "",
+	country: payload01.country default "",
+	creationDate: payload01.creationDate as String default "",
+	city: payload01.city as String default "",
+	street: payload01.street as String default "",
+	accountType: payload01.accountType default "",
+	state: payload01.state as String default "",
+	firstName: split(payload01.name)[0],
+	lastName: split(payload01.name)[1],
+	miles: payload01.miles default 0
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	
+</flow>	
+	
+		<flow name="getAccounts" doc:id="cb544b58-605b-42ba-bcbc-26866660ba1f" >
+		<db:select doc:name="Select" doc:id="8cea9c3d-38a4-4672-a0ab-1b0b93929162" config-ref="Database_Config">
+			<db:sql >select * from flights_customers where accountType=:type </db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"type": attributes.queryParams."type"
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="de243cc4-cdb5-46d7-a4af-731c10fe0e68" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+fun split
+(data) = data splitBy (" ")
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	accountID: payload01.accountID default "",
+	address: ((payload01.street default "") ++ (payload01.city default "")) ++ (payload01.state default ""),
+	postal: payload01.postal default "",
+	country: payload01.country default "",
+	creationDate: payload01.creationDate as String default "",
+	city: payload01.city as String default "",
+	street: payload01.street as String default "",
+	accountType: payload01.accountType default "",
+	state: payload01.state as String default "",
+	firstName: split(payload01.name)[0],
+	lastName: split(payload01.name)[1],
+	miles: payload01.miles default 0
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	
+	<flow name="getAccountByID" doc:id="71d6dca4-a6ea-4526-b994-ac3369a8d237" >
+		<db:select doc:name="Select" doc:id="bb357fba-7f9b-43f6-820d-03fad4d3312d" config-ref="Database_Config">
+			<db:sql >select * from flights_customers where accountID=:accountID </db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	accountID: attributes.uriParams.id
+	
+	}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="95832e19-2abe-48aa-8d78-39daf8bde2a2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+fun split
+(data) = data splitBy (" ")
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	accountID: payload01.accountID default "",
+	address: ((payload01.street default "") ++ (payload01.city default "")) ++ (payload01.state default ""),
+	postal: payload01.postal default "",
+	country: payload01.country default "",
+	creationDate: payload01.creationDate as String default "",
+	city: payload01.city as String default "",
+	street: payload01.street as String default "",
+	accountType: payload01.accountType default "",
+	state: payload01.state as String default "",
+	firstName: split(payload01.name)[0],
+	lastName: split(payload01.name)[1],
+	miles: payload01.miles default 0
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	
+	<flow name="getAccountsbycountry" doc:id="c14f60cd-f4b5-4689-8865-16e89793ffca" >
+		<db:select doc:name="Select" doc:id="7b883f27-a708-4e6a-aa87-ab5e6a446764" config-ref="Database_Config">
+			<db:sql >select * from flights_customers where accountType=:type and  country= :country</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"type": attributes.queryParams."type",
+		country: attributes.queryParams.'country'
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="6cd40b63-bc31-48da-af6d-026f20bd3e75" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+fun split
+(data) = data splitBy (" ")
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	accountID: payload01.accountID default "",
+	address: ((payload01.street default "") ++ (payload01.city default "")) ++ (payload01.state default ""),
+	postal: payload01.postal default "",
+	country: payload01.country default "",
+	creationDate: payload01.creationDate as String default "",
+	city: payload01.city as String default "",
+	street: payload01.street as String default "",
+	accountType: payload01.accountType default "",
+	state: payload01.state as String default "",
+	firstName: split(payload01.name)[0],
+	lastName: split(payload01.name)[1],
+	miles: payload01.miles default 0
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>	
+	<flow name="postAccount" doc:id="12baf1fb-2385-44a0-8b3e-54766bd57e29" >
+		<db:insert doc:name="Insert" doc:id="a22469d8-fa87-4f79-95a5-559242bfdf82" >
+			<db:sql >insert into accounts value(:accountID,
+:name,
+:street,
+:city,
+:state,
+:postal,
+:country
+)</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+accountID:payload.accountID,
+name:payload.name,
+street:payload.street,
+city:payload.city,
+state:payload.state,
+postal:payload.postal,
+country:payload.country}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="709ead8e-a614-41ff-ae39-2fcdbc6d09b7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message:"Account has been created"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

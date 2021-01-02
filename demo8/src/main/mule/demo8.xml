@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="384091cb-68e7-4f3d-bdc7-2460c91abced" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<vm:config name="VM_Config" doc:name="VM Config" doc:id="75f73dea-6288-4a0a-bfc7-5a5a4f2975a3" >
+		<vm:connection />
+		<vm:queues >
+			<vm:queue queueName="CustomerQueue" />
+		</vm:queues>
+	</vm:config>
+	<flow name="publisher" doc:id="a95c88ee-a8a0-49fd-b042-01bf172b3c3a" >
+		<http:listener doc:name="/Post Customer" doc:id="642cc2a7-badb-48c6-8bde-938be6920847" config-ref="HTTP_Listener_config" path="/customer" allowedMethods="POST"/>
+		<logger level="INFO" doc:name="Logger" doc:id="21677fca-a49d-45e7-9d52-544cab2ee76b" message="before publish"/>
+		<vm:publish-consume queueName="CustomerQueue" doc:name="Publish consume" doc:id="7ac3c2f1-77bd-4a50-957a-e02d1fc41066" config-ref="VM_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="d8d99254-2c8e-450c-84c6-1c87529fbdad" message="afterPublish"/>
+	</flow>
+	<flow name="subscriber" doc:id="422953ea-9339-4128-8b8a-7730943ea819" >
+		<vm:listener queueName="CustomerQueue" doc:name="Listener" doc:id="fbd58dff-17cd-4943-abac-5b6078ef8675" config-ref="VM_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="40fb79a6-f737-4e21-9bcd-7d57d40ad091" message="#[payload]"/>
+	</flow>
+</mule>

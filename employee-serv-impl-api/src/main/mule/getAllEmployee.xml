@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="0745ee0a-e2c8-4ad8-a7bb-8d9cb440d0ca" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="employee-serv-impl-apiFlow" doc:id="60f43992-70ad-4824-b76b-bcdca6a56235" >
+		<http:listener doc:name="Listener" doc:id="7cba1510-630a-40a0-a698-45c9c72e7edb" path="/getEmployees" config-ref="HTTP_Listener_config"/>
+		<db:select doc:name="Select" doc:id="310e3803-424d-4d6e-816f-604ba27c3c6e" config-ref="Database_Config">
+			<db:sql >SELECT * FROM employee where firstname= :fName and lastname = :lName;
+</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	'fName': attributes.queryParams.'fName',
+	'lName': attributes.queryParams.'lName',
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="7f23718b-8199-44c6-8e2e-6602d996c470" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	id: payload01.id,
+	name: (payload01.firstNamedefault "") ++ " " ++ (payload01.lastName default ""),
+	role: payload01.role default ""
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

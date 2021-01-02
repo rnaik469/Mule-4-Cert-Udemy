@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="getFlights" doc:id="19291347-adae-4d14-b36f-28d0be51ad17" >
+		<db:select doc:name="Select from table american" doc:id="f991c10a-e428-467d-b3da-97c2405c48b7" config-ref="Database_Config">
+			<db:sql >SELECT * FROM american</db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="d34e04be-9382-4275-a8d0-37db04bbdb2e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+American:{
+flights_info:payload map ( payload01 , indexOfPayload01 ) -> {
+	ID: (payload01.ID default 0),
+	code: (payload01.code1 as String default "") ++ (payload01.code2 as String default ""),
+	price: payload01.price default 0,
+	departureDate: payload01.takeOffDate as String default "",
+	origin: payload01.fromAirport as String default "",
+	destination: payload01.toAirport as String default "",
+	emptySeats: payload01.seatsAvailable default 0,
+	plane: {
+		"type": payload01.planeType as String default "",
+		totalSeats: payload01.totalSeats default 0
+	}
+}
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="getFlightByID" doc:id="cdd52cd8-79c7-43c7-8d7f-5c10bc32345e" >
+		<logger level="INFO" doc:name="Logger" doc:id="3bd4ef3b-fe28-4097-99b0-73dd10fac3e5" message="#[id: attributes.uriParams.'ID']"/>
+		<db:select doc:name="Select from table american" doc:id="a7fcf85e-a91e-4020-9601-026b951eb762" config-ref="Database_Config">
+			<db:sql >SELECT * FROM american where ID =:id</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	id: attributes.uriParams.'ID'
+}]]]></db:input-parameters>
+		
+</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="f8a79760-212b-4390-99d6-3ae8cb0e65d5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+American:{
+flights_info:payload map ( payload01 , indexOfPayload01 ) -> {
+	ID: (payload01.ID default 0),
+	code: (payload01.code1 as String default "") ++ (payload01.code2 as String default ""),
+	price: payload01.price default 0,
+	departureDate: payload01.takeOffDate as String default "",
+	origin: payload01.fromAirport as String default "",
+	destination: payload01.toAirport as String default "",
+	emptySeats: payload01.seatsAvailable default 0,
+	plane: {
+		"type": payload01.planeType as String default "",
+		totalSeats: payload01.totalSeats default 0
+	}
+}
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow><flow name="deleteFlightByID" doc:id="2735ba82-b9a2-44b2-b63d-f2253cd73fa6" >
+		<db:delete doc:name="Delete" doc:id="00c74a75-675d-4dd2-8a9c-c6662c42a26b" >
+			<db:sql >delete from american where ID = :id</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	id: attributes.uriParams.'ID'
+}]]]></db:input-parameters>
+		</db:delete>
+		<ee:transform doc:name="Transform Message" doc:id="a2052fd7-475c-469a-8ee3-4e3d41e75d7a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message:"FLIGHT has been removed"
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	
+	
+	<flow name="getFlightBydestination" doc:id="c246f4b4-cfa3-467b-aea2-cdf04e6eaa9d" >
+		<db:select doc:name="Select from table american" doc:id="b80ee23a-0bf8-4aa6-a94a-8334fa78a8a5" config-ref="Database_Config">
+			<db:sql >select * FROM american where toAirport =:destination</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	destination: attributes.queryParams."destination"
+}]]]></db:input-parameters>
+		
+</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="0737dda2-67b0-41c6-8a9b-dcb4252bca82" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+American:{
+flights_info:payload map ( payload01 , indexOfPayload01 ) -> {
+	ID: (payload01.ID default 0),
+	code: (payload01.code1 as String default "") ++ (payload01.code2 as String default ""),
+	price: payload01.price default 0,
+	departureDate: payload01.takeOffDate as String default "",
+	origin: payload01.fromAirport as String default "",
+	destination: payload01.toAirport as String default "",
+	emptySeats: payload01.seatsAvailable default 0,
+	plane: {
+		"type": payload01.planeType as String default "",
+		totalSeats: payload01.totalSeats default 0
+	}
+}
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+
+	
+	<flow name="postFlight" doc:id="6e05902c-4a44-4d6c-890e-55d9ecf2dd3c" >
+		<logger level="INFO" doc:name="Logger" doc:id="376ab054-e669-480d-959e-3fe780111929" message="#[payload]"/>
+		<db:insert doc:name="Insert" doc:id="d502227b-b512-4a36-9162-4350cf2c9113" config-ref="Database_Config">
+			<db:sql>insert into american values(:ID,:code1,:code2,:airlineName,:toAirport,:fromAirport,:takeOffDate,:price,:planeType,:seatsAvailable,:totalSeats)
+</db:sql>
+			<db:input-parameters><![CDATA[#[{
+ID : payload.ID,
+code1 : payload.code1,
+code2 : payload.code2,
+airlineName : payload.airlineName,
+toAirport : payload.toAirport,
+fromAirport : payload.fromAirport,
+takeOffDate : payload.takeOffDate,
+price : payload.price,
+planeType : payload.planeType,
+seatsAvailable : payload.seatsAvailable,
+totalSeats : payload.totalSeats
+
+	
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="bb30dec1-760d-468b-82ef-577bc7d82f40">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "flight details has been updated"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

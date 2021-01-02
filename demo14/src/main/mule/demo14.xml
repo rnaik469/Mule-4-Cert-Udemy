@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="cfe8311a-de26-4c84-8554-77a6cfc11958" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="bc3f6afc-1ce9-4f8b-8a43-092aa25581e8" >
+		<http:request-connection host="dummy.restapiexample.com" />
+	</http:request-config>
+	<flow name="demo14Flow" doc:id="714ed294-c8f3-43ce-b7b1-62375373ab5b" >
+		<http:listener doc:name="Listener" doc:id="594e0815-1f06-4862-88da-77e6da5f6430" config-ref="HTTP_Listener_config" path="/call"/>
+		<http:request method="GET" doc:name="invoke employee" doc:id="4ef9493e-682c-48a6-903d-ab2322037dce" config-ref="HTTP_Request_configuration" path="/api/v1/employees"/>
+	</flow>
+</mule>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="createRecordFlow" doc:id="6f908691-8e0b-4be3-a0bc-ae5235de8e2c" >
+		<http:listener doc:name="Listener" doc:id="e17c43e3-028a-4f80-8188-d72e19fd36b9" config-ref="HTTP_Listener_config" path="/crtsf"/>
+		<ee:transform doc:name="Transform Message" doc:id="9e5b1cd2-42fc-48bd-98c7-4b0ce2b3933a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[{
+	LastName: payload.LastName,
+	FirstName: payload.FirstName,
+	Email: payload.Email
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create doc:name="Create" doc:id="c6b761c2-2938-4cf1-a391-921b43d57bcd" config-ref="Salesforce_Config" type="Contact"/>
+		<ee:transform doc:name="Transform Message" doc:id="10a4d5d1-0a22-43b5-90e2-fca30b310342" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message":"A new contact created successfully"
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

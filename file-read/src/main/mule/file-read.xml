@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="848a7ef0-2e28-4062-8b98-2c1b813128f9" >
+		<email:smtp-connection host="${smtp.host}" port="${smtp.port}" user="${smtp.user}" password="${smtp.password}">
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="9f91b488-156e-4e81-8fdf-d279491ca105" file="mule.Dev.properties" />
+	<flow name="file-read-appFlow" doc:id="671f2ad8-8f80-4212-b96f-5129f7720ef7" >
+		<scheduler doc:name="Scheduler" doc:id="13312a78-efe1-463f-8ef3-db455c652043" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="30" timeUnit="SECONDS"/>
+			</scheduling-strategy>
+		</scheduler>
+		<file:read doc:name="Read" doc:id="d180ea9e-4a59-450b-ad96-e5c834492bee" path="C:\MST\OP\filereadInput.csv"/>
+		<ee:transform doc:name="Transform Message" doc:id="93aeb478-74c3-40c0-9b9b-bcaf782f3de3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+
+import toBase64 from dw::core::Binaries
+
+var image = readUrl(log("https://www.mediawiki.org/wiki/MediaWiki#/media/File:Wikimedia_Hackathon_Prague_2019_-_Group_Photo_-_CLK_-_cropped.jpg"), "application/octet-stream")
+
+output application/json
+---
+toBase64(image)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="5d65f6ca-48b6-4aa5-9212-b14773a08691" message="#[payload]"/>
+		<email:send doc:name="Send" doc:id="0a595bc9-59a1-4c42-bb28-3c35d00c64a8" config-ref="Email_SMTP" fromAddress="${mail.from}" subject="${mail.subject}">
+			<email:to-addresses >
+				<email:to-address value="rnayik469@gmail.com" />
+			</email:to-addresses>
+			<email:body contentType="text/plain" >
+				<email:content ><![CDATA[#[#[
+            {
+                 'image-attachment.jpg' : payload
+            }]]]]></email:content>
+			</email:body>
+		
+</email:send>
+	</flow>
+</mule>
