@@ -12,7 +12,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
 	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="1e44949a-5944-4359-9c5d-1415dbd098cf" >
-		<email:smtp-connection host="smtp.gmail.com" user="gmail.com" password="" port="587">
+		<email:smtp-connection host="smtp.gmail.com" user="gmail.com" password="" port="">
 			<email:properties >
 				<email:property key="mail.smtp.starttls.enable" value="true" />
 			</email:properties>
